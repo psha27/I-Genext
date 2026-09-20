@@ -1,0 +1,15 @@
+# Homepage hero banner
+
+Open `/admin#hero` and select **Hero banner**. Edit the introductory line, main headline, highlighted headline, supporting text, button label and image description. Save hero publishes these changes. The button leads to the original consulting hero, now the next section.
+
+Choose **Included demo film**, **Still image**, or **Uploaded video**. Upload PNG/JPG/WebP images up to 10 MB or MP4/WebM videos up to 100 MB. Uploads publish immediately and select that media type. Save pending text changes first. Upload a poster image, then select Uploaded video to use both together. Remove media restores the included demo when that media was selected. Landscape 16:9 media works best. Browser support depends on the codecs in the uploaded file.
+
+Text remains editable HTML over the video. The silent looping background has a pause control, a still-image fallback, and respects reduced-motion settings. No automatic sound playback.
+
+The demo is a 12-second camera-motion film of an original generated consulting scene, with animated data traces; it is not live-action footage of the firm. Source artwork was generated with the built-in image-generation tool. Prompt: A photorealistic cinematic widescreen modern glass boardroom at blue hour overlooking an Indian financial district, four Indian consulting professionals collaborating, understated analytics display, navy/cyan/teal palette, darker left-side space for the headline, no text or logos. Full prompt recorded in the session. Assets: `client/public/profile/consulting-hero-poster-v2.png` and `consulting-hero-demo-v2.webm`. Re-render using `node scripts/render-hero-demo.mjs` with the dev website and a dedicated headless Chrome debugging session on localhost:9224 running.
+
+Hero metadata uses the existing content repository, under its own `hero-content` namespace. Local development files and uploads live in `server/data/hero/` (override `HERO_DATA_DIR`). Production metadata uses configured MySQL; back up the upload directory and keep it on persistent storage. The existing platform catalog uses a separate namespace and is unaffected. Upload and update APIs require the admin session, same-origin requests and a current version.
+
+Design reference: https://www.investwithaqua.com/ ? original artwork and consulting content are used here.
+
+Revision 2 corrects the visual alignment in the source artwork and demo, using the built-in image tool. Edit prompt: Recompose the same consulting boardroom as a balanced, centered architectural photograph. Center the table and its vanishing point; distribute professionals around it; extend detailed windows, skyline and office scenery from the left edge to the right edge with comparable brightness. Preserve the Indian professionals, photographic realism, blue-hour skyline and navy/cyan/teal palette. Remove the empty dark wall, left fade, vignette and reserved headline space. No text or logos. The website applies a separate vertically graded readability overlay. Original assets are preserved alongside the v2 assets.

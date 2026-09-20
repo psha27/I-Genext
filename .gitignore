@@ -1,0 +1,12 @@
+node_modules/
+client/dist/
+*.tsbuildinfo
+.env
+server/.env
+server/data/
+test-results/
+
+# Private environment files; safe examples may be committed.
+.env.*
+!.env.example
+!.env.*.example

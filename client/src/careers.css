@@ -1,0 +1,23 @@
+.footer-brand .footer-tagline{max-width:420px;font-size:clamp(25px,2.6vw,38px);font-weight:700;line-height:1.3;letter-spacing:-.035em;color:#00B0F0}
+.careers-openings{background:radial-gradient(ellipse at 95% 0,rgba(29,78,216,.18),transparent 50%),#07090e;border-top:1px solid #292d37}
+.jobs-toolbar{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin:36px 0 20px}
+.jobs-toolbar select,.job-editor select{width:100%;padding:14px 16px;background:#10141d;color:#fff;border:1px solid #394253;border-radius:0;font:inherit;min-height:50px}
+.job-list{display:grid;gap:16px}.job-card{padding:28px;border:1px solid #303746;background:#0c1018;margin:0 0 18px;min-width:0}
+.job-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}.job-card h3{font-size:26px;margin:12px 0;color:#fff;overflow-wrap:anywhere}
+.job-card p{color:#b6c1d2;line-height:1.75}.job-card .btn{flex-shrink:0}.job-card details{border-top:1px solid #303746;padding-top:18px;margin-top:18px}
+.job-card summary{cursor:pointer;color:#7dd9f8;line-height:1.6;font-weight:600}.job-description{white-space:pre-wrap;overflow-wrap:anywhere}
+.jobs-empty{padding:36px;border:1px dashed #394253}.jobs-empty h3{font-size:26px}.jobs-empty p{color:#b6c1d2}
+.application-form>p{line-height:1.65}.application-fields{border:0;margin:24px 0;padding:0;min-width:0}.candidate-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.candidate-grid .field-wide{grid-column:1/-1}.application-fields textarea,.job-editor textarea{resize:vertical;width:100%;font:inherit;line-height:1.6;padding:13px 16px;background:#10141d;color:#fff;border:1px solid #394253}
+.resume-upload{margin:24px 0}.resume-upload small{font-weight:400;line-height:1.6}.resume-upload input{max-width:100%;padding:18px 12px}
+.application-consent{display:flex;align-items:flex-start;gap:12px;font-size:13px;line-height:1.7;color:#b6c1d2}.application-consent input{margin-top:5px;accent-color:#1D4ED8;flex-shrink:0;width:18px;height:18px}
+.application-reference{display:block;overflow-wrap:anywhere;color:#70d9ec;letter-spacing:.02em;line-height:1.7}.application-success p{line-height:1.8}.application-success a{color:#70d9ec;text-decoration:underline}
+.admin-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0}.admin-tabs button[aria-pressed=true]{background:#1D4ED8;color:#fff;border-color:#1D4ED8}
+.admin-jobs-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:36px}.job-editor{background:#0c1018;padding:28px;border:1px solid #303746;scroll-margin-top:24px}.job-editor h2,.admin-careers h2{font-size:26px}.job-editor p{color:#b6c1d2;line-height:1.65}.job-editor>.application-fields>.field{margin:24px 0}.job-actions{display:flex;gap:12px;flex-wrap:wrap}
+.job-status{display:inline-block;padding:5px 10px;font-size:12px;text-transform:uppercase;letter-spacing:.1em;border:1px solid #394253;color:#b6c1d2}.status-open{color:#74e9c3;border-color:#00A094}.status-closed{color:#d4b4f5;border-color:#7030A0}
+.candidate-details{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0}.candidate-details dt{font-size:12px;color:#aab4c4;margin-bottom:8px}.candidate-details dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;color:white}
+.application-email-status{display:flex;gap:20px;flex-wrap:wrap;margin-top:24px;color:#b6c1d2;font-size:12px}.admin-application small{font-size:12px}
+@media(max-width:760px){.jobs-toolbar,.candidate-grid,.admin-jobs-layout,.candidate-details{grid-template-columns:1fr}.job-card-top{flex-direction:column}.job-card,.job-editor{padding:20px}.candidate-grid .field-wide{grid-column:auto}.job-card h3{font-size:22px}.application-form .btn{width:100%}.footer-brand .footer-tagline{font-size:30px}.jobs-toolbar{gap:14px}}
+
+.job-card .btn,.application-success .btn,.careers-openings>div>div[role=alert] .btn{min-height:48px;padding:12px 22px;display:inline-flex;align-items:center;justify-content:center}
+.application-form [role=alert]{padding:14px 16px;background:#35151c;border:1px solid #8d4052;color:#ffd9df;line-height:1.6;margin:18px 0}

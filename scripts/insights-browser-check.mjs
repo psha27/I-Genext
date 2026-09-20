@@ -1,0 +1,122 @@
+import { pathToFileURL,fileURLToPath } from 'node:url'
+import { mkdtemp,writeFile,mkdir,rm,readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
+import { randomBytes } from 'node:crypto'
+import assert from 'node:assert/strict'
+import express from 'express'
+import { createApp } from '../server/src/app.js'
+import { createAdminAuth,hashPassword } from '../server/src/admin.js'
+import { createInsightStore } from '../server/src/insights-store.js'
+import { createSocialConfiguration } from '../server/src/social-config.js'
+const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href)
+const directory=await mkdtemp(join(tmpdir(),'igenext-cms-browser-')),credentialsFile=join(directory,'admin.json')
+await writeFile(credentialsFile,JSON.stringify({username:'admin',...await hashPassword('CMS browser password 123!')}))
+const store=createInsightStore({directory,databaseUrl:'',nodeEnv:'test'});await store.ready
+const configuration=createSocialConfiguration(store,{INSIGHTS_DATA_DIR:directory,SOCIAL_ENCRYPTION_KEY:randomBytes(32).toString('base64')})
+const posts=[]
+const publisher={verify:async platform=>({id:platform==='x'?'100':platform==='facebook'?'200':'300',label:'I-Genext '+platform}),publish:async(platform,preview)=>{posts.push({platform,...preview});return {remoteId:'mock-post-'+platform,remoteUrl:'https://www.facebook.com/123'}}}
+const app=createApp({mode:'test',listRequests:async()=>[]},{auth:createAdminAuth({credentialsFile}),insightStore:store,socialConfiguration:configuration,socialPublisher:publisher,emailConfigured:true})
+app.get('/api/jobs',(_req,res)=>res.json({jobs:[]}))
+const dist=fileURLToPath(new URL('../client/dist/',import.meta.url));app.use(express.static(dist));app.get('/admin',(_req,res)=>res.sendFile(join(dist,'index.html')))
+const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve))
+const base='http://127.0.0.1:'+server.address().port,browser=await chromium.launch({headless:true})
+const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),visitor=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'})
+const errors=[];page.on('pageerror',e=>errors.push(e.message));visitor.on('pageerror',e=>errors.push(e.message))
+page.on('dialog',dialog=>dialog.accept())
+await mkdir('test-results',{recursive:true})
+try{
+ await page.goto(base+'/admin#insights')
+ await page.getByLabel('Password',{exact:true}).fill('CMS browser password 123!')
+ await page.getByRole('button',{name:'Sign in',exact:true}).click()
+ await page.getByRole('heading',{name:'Create an insight',exact:true}).waitFor()
+ const title='A connected approach to AI governance'
+ await page.getByLabel('Title',{exact:true}).fill(title)
+ await page.getByLabel('URL slug',{exact:false}).fill('connected-ai-governance')
+ await page.getByLabel('Topic',{exact:true}).fill('Digital strategy')
+ await page.getByLabel('Summary',{exact:true}).fill('Turn governance decisions into practical actions with clear ownership.')
+ await page.getByLabel('Section 1 heading (optional)',{exact:true}).fill('Begin with accountability')
+ await page.getByLabel('Section 1 text',{exact:true}).fill('Assign clear ownership for data, controls and decisions.\nReview outcomes with the people using the technology.')
+ await page.getByRole('button',{name:'Add section',exact:true}).click()
+ await page.getByLabel('Section 2 heading (optional)',{exact:true}).fill('Measure the outcome')
+ await page.getByLabel('Section 2 text',{exact:true}).fill('Connect each initiative to a measurable business result and review the evidence.')
+ await page.getByRole('button',{name:'Preview article',exact:true}).click()
+ await page.locator('.cms-article-preview').getByRole('heading',{name:title,exact:true}).waitFor()
+ await page.getByRole('button',{name:'Save draft',exact:true}).click()
+ await page.getByRole('status').filter({hasText:'Draft saved.'}).waitFor()
+ await visitor.goto(base+'/#insights')
+ assert.equal(await visitor.getByRole('heading',{name:title,exact:true}).count(),0)
+ assert.equal(await visitor.locator('.insight-admin-actions').count(),0)
+ await page.getByRole('button',{name:'Publish on website',exact:true}).click()
+ await page.getByRole('status').filter({hasText:'Insight published on the website.'}).waitFor()
+ await page.screenshot({path:'test-results/insights-admin-editor.png'})
+ await visitor.reload()
+ await visitor.getByRole('heading',{name:title,exact:true}).waitFor()
+ await visitor.getByRole('button',{name:'Digital strategy',exact:true}).click()
+ assert.equal(await visitor.locator('.insight-card').count(),1)
+ await visitor.locator('#insights').screenshot({path:'test-results/insights-public.png',style:'.site-header,.skip-link{visibility:hidden!important}'})
+ await visitor.getByRole('link',{name:'Read '+title,exact:true}).click()
+ await visitor.getByRole('dialog',{name:title,exact:true}).waitFor()
+ await visitor.getByRole('heading',{name:'Measure the outcome',exact:true}).waitFor()
+ await visitor.getByRole('button',{name:'Close dialog'}).click()
+ await visitor.goto(base+'/insights/connected-ai-governance')
+ await visitor.getByRole('heading',{name:title,exact:true}).waitFor()
+ assert.equal(await visitor.locator('meta[property="og:title"]').getAttribute('content'),title)
+ await page.getByRole('button',{name:'Social accounts',exact:true}).click()
+ await page.getByLabel('Public website URL',{exact:true}).fill('https://www.i-genext.com')
+ for(const [platform,label,id] of [['x','X (Twitter)',''],['facebook','Facebook','200'],['instagram','Instagram','300']]){
+  const account=page.locator('.social-account').filter({has:page.getByRole('heading',{name:label,exact:true})})
+  await account.getByLabel('Access token',{exact:true}).fill('browser-secret-'+platform)
+  if(id)await account.locator('input[inputmode=numeric]').fill(id)
+ }
+ await page.getByRole('button',{name:'Save social settings',exact:true}).click()
+ await page.getByRole('status').filter({hasText:'Settings saved.'}).waitFor()
+ for(const label of ['X (Twitter)','Facebook','Instagram']){
+  await page.getByRole('button',{name:'Verify '+label,exact:true}).click()
+  await page.getByRole('status').filter({hasText:label+' account verified.'}).waitFor()
+ }
+ await page.screenshot({path:'test-results/insights-social-settings.png',fullPage:true})
+ const masked=await (await page.request.get(base+'/api/admin/social-settings')).text()
+ assert.ok(!masked.includes('browser-secret'))
+ assert.ok(!(await readFile(join(directory,'content.json'),'utf8')).includes('browser-secret'))
+ await page.getByRole('button',{name:'Manage insights',exact:true}).click()
+ for(const [platform,label] of [['x','X (Twitter)'],['facebook','Facebook']]){
+  await page.getByLabel('Platform',{exact:true}).selectOption(platform)
+  await page.getByLabel('Social caption',{exact:true}).fill('Explore our new perspective on AI governance.')
+  await page.getByRole('button',{name:'Preview social post',exact:true}).click()
+  await page.locator('.social-preview').waitFor()
+  await page.getByLabel('I reviewed this post and its company account destination.',{exact:true}).check()
+  await page.getByRole('button',{name:'Publish to '+label,exact:true}).click()
+  await page.getByRole('status').filter({hasText:'Published to '+label+'.'}).waitFor()
+ }
+ assert.equal(posts.length,2)
+ await page.getByLabel('Platform',{exact:true}).selectOption('instagram')
+ await page.getByRole('button',{name:'Preview social post',exact:true}).click()
+ await page.getByText('Instagram requires a public JPEG cover image URL.',{exact:true}).waitFor()
+ await page.locator('.insight-social').screenshot({path:'test-results/insights-social-publishing.png'})
+ await page.goto(base+'/#insights')
+ await page.getByRole('heading',{name:title,exact:true}).waitFor()
+ assert.equal(await page.getByRole('link',{name:'Edit / Configure',exact:true}).count(),0)
+ assert.equal(await page.getByRole('button',{name:'Delete insight',exact:true}).count(),0)
+ assert.equal(await page.locator('.insight-admin-actions').count(),0)
+ await page.goto(base+'/admin#insights')
+ await page.getByRole('button',{name:'Edit '+title,exact:true}).click()
+ await page.waitForFunction(()=>document.querySelector('.insight-editor input')?.value==='A connected approach to AI governance')
+ await page.getByLabel('Title',{exact:true}).fill('AI governance with clear ownership')
+ await page.getByRole('button',{name:'Update on website',exact:true}).click()
+ await page.getByRole('status').filter({hasText:'Insight published on the website.'}).waitFor()
+ await page.setViewportSize({width:390,height:900})
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true)
+ await page.screenshot({path:'test-results/insights-admin-mobile.png'})
+ await page.goto(base+'/#insights')
+ const card=page.locator('.insight-card').filter({has:page.getByRole('heading',{name:'AI governance with clear ownership',exact:true})})
+ await card.waitFor()
+ assert.equal(await card.getByRole('button',{name:'Delete insight',exact:true}).count(),0)
+ await page.goto(base+'/admin#insights')
+ await page.locator('.cms-list-item').filter({has:page.getByRole('heading',{name:'AI governance with clear ownership',exact:true})}).getByRole('button',{name:'Delete',exact:true}).click()
+ await page.getByRole('status').filter({hasText:'Insight deleted from the website.'}).waitFor()
+ assert.equal((await visitor.request.get(base+'/insights/connected-ai-governance')).status(),404)
+ assert.equal(posts.length,2)
+ assert.deepEqual(errors,[])
+ console.log('Insights browser checks passed: draft/publish/preview, public filters and article URL, encrypted account setup, mocked X/Facebook publishing, Instagram prerequisites, admin-only edit/delete, and mobile layout. No real social posts sent.')
+}finally{await browser.close();await new Promise(resolve=>server.close(resolve));await store.close();await rm(directory,{recursive:true,force:true})}

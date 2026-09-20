@@ -1,0 +1,98 @@
+[
+  {
+    "slug": "ai-pilot-to-operating-model",
+    "topic": "AI & Technology",
+    "title": "Your AI pilot works. What happens on Monday?",
+    "summary": "A practical blueprint for moving from a promising demo to an everyday business capability.",
+    "body": [
+      [
+        "Start with a decision, not a model",
+        "Choose a recurring decision with a named owner, a measurable baseline and a clear cost of error. Record how the team works today before introducing automation. A faster draft is only useful if the complete workflow becomes better."
+      ],
+      [
+        "Design the handoff",
+        "Specify which inputs are permitted, what the system can recommend and when a person must review or override it. Treat missing context and uncertain outputs as normal operating conditions, with a clear escalation path."
+      ],
+      [
+        "Evaluate the whole workflow",
+        "Test representative cases, difficult exceptions and outdated source material. Track quality, handling time, reviewer effort and operating cost together. Set acceptance criteria before evaluating the pilot."
+      ],
+      [
+        "Make adoption an operating responsibility",
+        "Assign ownership for training, data maintenance, monitoring and rollback. Expand only when the people running the process can explain the results and manage the exceptions."
+      ]
+    ]
+  },
+  {
+    "slug": "continuous-control-monitoring",
+    "topic": "Governance & Risk",
+    "title": "From periodic assurance to continuous visibility",
+    "summary": "Connect evidence, ownership and exceptions without adding another layer of bureaucracy.",
+    "body": [
+      [
+        "Begin with a control objective",
+        "Identify the failure you want to detect, the process owner and the evidence that demonstrates the control operates. More alerts do not automatically mean better assurance."
+      ],
+      [
+        "Make evidence traceable",
+        "Record the source, collection time and reviewer for each item. Design access around responsibilities and preserve a history of changes so that reviewers can reconstruct the decision."
+      ],
+      [
+        "Route exceptions deliberately",
+        "Give every exception an owner, a due date and an escalation route. Tune thresholds using reviewed examples and monitor false positives alongside unresolved issues."
+      ],
+      [
+        "Keep professional judgement central",
+        "Monitoring supports review; it does not establish assurance by itself. Use a recurring review to challenge control design, investigate patterns and confirm that remediation addresses the underlying issue."
+      ]
+    ]
+  },
+  {
+    "slug": "automation-value",
+    "topic": "AI & Technology",
+    "title": "Automate the friction. Measure the value.",
+    "summary": "Separate time released from money saved before committing to automation.",
+    "body": [
+      [
+        "Map the real process",
+        "Follow work from request to completion, including rework, handoffs and approval queues. Remove redundant steps before choosing a tool."
+      ],
+      [
+        "Use realistic assumptions",
+        "Estimate task volume, handling time and the proportion of work automation can safely address. Apply an adoption assumption and include the effort required to review exceptions."
+      ],
+      [
+        "Separate capacity from cash",
+        "Hours released may improve service or create capacity without reducing expenditure. A cash savings case needs a specific plan for how costs will change."
+      ],
+      [
+        "Include the full cost",
+        "Account for implementation, integration, licensing, maintenance, monitoring and change management. Review actual outcomes against the baseline after deployment."
+      ]
+    ]
+  },
+  {
+    "slug": "finance-decision-speed",
+    "topic": "Finance",
+    "title": "Design finance for decision speed",
+    "summary": "Better reporting starts with ownership, trusted inputs and explicit assumptions.",
+    "body": [
+      [
+        "Work backwards from the decision",
+        "Identify the decision the report supports, who makes it and when it is needed. Retire metrics that do not change an action or explain a meaningful risk."
+      ],
+      [
+        "Connect inputs and assumptions",
+        "Define ownership for source data, reconciliations and planning assumptions. Make changes visible so decision makers can understand why a forecast moved."
+      ],
+      [
+        "Compare scenarios",
+        "Model a small number of plausible scenarios and the variables that matter most. Use ranges where inputs are uncertain and show which assumptions drive the result."
+      ],
+      [
+        "Close the loop",
+        "Compare decisions with subsequent outcomes. Use variance reviews to improve the model and process rather than simply expanding the reporting pack."
+      ]
+    ]
+  }
+]
